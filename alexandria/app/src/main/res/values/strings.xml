@@ -25,6 +25,8 @@
     <string name="back_button">go back</string>
     <string name="share_text">A must read book: </string>
     <string name="book_search_no_internet">Unable to search, make sure you are connected to the internet.</string>
+    <string name="book_saved">%1$s successfully saved.</string>
+    <string name="undo">UNDO</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="about_text">This application gets book information from a Google API. All titles, cover images, and author information come from there.

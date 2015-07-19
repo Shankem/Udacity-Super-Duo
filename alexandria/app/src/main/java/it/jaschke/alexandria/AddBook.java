@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -73,7 +74,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 if(ean.length()==10 && !ean.startsWith("978")){
                     ean="978"+ean;
                 }
-                if(ean.length()<13){
+                if(ean.length() == 0){
                     clearFields();
                     return;
                 }
@@ -112,6 +113,10 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         rootView.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                TextView titleView = ((TextView) rootView.findViewById(R.id.bookTitle));
+                Snackbar.make(view, getString(R.string.book_saved, titleView.getText()), Snackbar.LENGTH_LONG)
+                        .setAction(R.string.undo, new UndoClickListener(ean.getText().toString()))
+                        .show();
                 ean.setText("");
             }
         });
@@ -119,10 +124,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         rootView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent bookIntent = new Intent(getActivity(), BookService.class);
-                bookIntent.putExtra(BookService.EAN, ean.getText().toString());
-                bookIntent.setAction(BookService.DELETE_BOOK);
-                getActivity().startService(bookIntent);
+                deleteBook(ean.getText().toString());
                 ean.setText("");
             }
         });
@@ -133,6 +135,13 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
 
         return rootView;
+    }
+
+    private void deleteBook(String book) {
+        Intent bookIntent = new Intent(getActivity(), BookService.class);
+        bookIntent.putExtra(BookService.EAN, book);
+        bookIntent.setAction(BookService.DELETE_BOOK);
+        getActivity().startService(bookIntent);
     }
 
     private void restartLoader(){
@@ -206,5 +215,22 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         activity.setTitle(R.string.scan);
+    }
+
+    /**
+     * Handles clicking undo on the snackbar after adding a book.
+     */
+    private class UndoClickListener implements View.OnClickListener {
+
+        private String mBookAdded = "";
+
+        public UndoClickListener(String book) {
+            mBookAdded = book;
+        }
+
+        @Override
+        public void onClick(View v) {
+            deleteBook(mBookAdded);
+        }
     }
 }
