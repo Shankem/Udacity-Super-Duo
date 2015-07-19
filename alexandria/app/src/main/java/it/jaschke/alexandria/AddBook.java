@@ -1,7 +1,6 @@
 package it.jaschke.alexandria;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -20,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import eu.livotov.zxscan.ScannerView;
 import it.jaschke.alexandria.data.AlexandriaContract;
 import it.jaschke.alexandria.services.BookService;
 import it.jaschke.alexandria.services.DownloadImage;
@@ -37,6 +37,8 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     private String mScanFormat = "Format:";
     private String mScanContents = "Contents:";
 
+    private ScannerView mScannerView = null;
+    private TextView mScanButton;
 
 
     public AddBook(){
@@ -91,22 +93,20 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             }
         });
 
-        rootView.findViewById(R.id.scan_button).setOnClickListener(new View.OnClickListener() {
+        mScanButton = (TextView) rootView.findViewById(R.id.scan_button);
+
+        mScanButton.findViewById(R.id.scan_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // This is the callback method that the system will invoke when your button is
-                // clicked. You might do this by launching another app or by including the
-                //functionality directly in this app.
-                // Hint: Use a Try/Catch block to handle the Intent dispatch gracefully, if you
-                // are using an external app.
-                //when you're done, remove the toast below.
-                Context context = getActivity();
-                CharSequence text = "This button should let you scan a book for its barcode!";
-                int duration = Toast.LENGTH_SHORT;
-
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-
+                if (mScanButton.getText().equals(getString(R.string.scan_button))) {
+                    mScanButton.setText(R.string.scan_stop_button);
+                    mScannerView.setVisibility(View.VISIBLE);
+                    mScannerView.startScanner();
+                } else {
+                    mScanButton.setText(R.string.scan_button);
+                    mScannerView.stopScanner();
+                    mScannerView.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -134,7 +134,30 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             ean.setHint("");
         }
 
+        setupScanner();
+
         return rootView;
+    }
+
+    private void setupScanner() {
+        mScannerView = (ScannerView) rootView.findViewById(R.id.scanner);
+        mScannerView.setScannerViewEventListener(new ScannerView.ScannerViewEventListener() {
+            @Override
+            public void onScannerReady() {
+            }
+
+            @Override
+            public void onScannerFailure(int i) {
+            }
+
+            public boolean onCodeScanned(final String data) {
+                mScannerView.stopScanner();
+                mScannerView.setVisibility(View.GONE);
+                mScanButton.setText(R.string.scan_button);
+                ean.setText(data);
+                return true;
+            }
+        });
     }
 
     private void deleteBook(String book) {

@@ -38,5 +38,6 @@ android {
 dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.android.support:design:22.2.0'
+    compile ('eu.livotov.labs:zxscanlib:2.0.1@aar') {transitive=true}
 
 }

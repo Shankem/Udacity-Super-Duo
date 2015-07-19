@@ -124,6 +124,11 @@
                 />
 
         </LinearLayout>
-
+        <eu.livotov.zxscan.ScannerView
+            android:id="@+id/scanner"
+            android:visibility="gone"
+            android:layout_below="@+id/eancontainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </RelativeLayout>
 </FrameLayout>
