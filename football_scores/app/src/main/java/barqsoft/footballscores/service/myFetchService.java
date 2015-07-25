@@ -31,6 +31,16 @@ import barqsoft.footballscores.R;
 public class myFetchService extends IntentService
 {
     public static final String LOG_TAG = "myFetchService";
+
+    private final String SOCCER_SEASON = "soccerseason";
+    private final String LINKS = "_links";
+    private final String SEASON_LINK = "http://api.football-data.org/alpha/soccerseasons/";
+    private final String SERIE_A = "357";
+    private final String PREMIER_LEGAUE = "354";
+    private final String CHAMPIONS_LEAGUE = "362";
+    private final String PRIMERA_DIVISION = "358";
+    private final String BUNDESLIGA = "351";
+
     public myFetchService()
     {
         super("myFetchService");
@@ -113,6 +123,18 @@ public class myFetchService extends IntentService
             if (JSON_data != null) {
                 //This bit is to check if the data contains any matches. If not, we call processJson on the dummy data
                 JSONArray matches = new JSONObject(JSON_data).getJSONArray("fixtures");
+                JSONArray validMatches = new JSONArray();
+
+                for (int i = 0; i < matches.length(); i++) {
+                    JSONObject match = matches.getJSONObject(i);
+                    String league = match.getJSONObject(LINKS).getJSONObject(SOCCER_SEASON).getString("href");
+                    league = league.replace(SEASON_LINK,"");
+                    if (isLeagueValid(league)) {
+                        validMatches.put(match);
+                    }
+                }
+                matches = validMatches;
+
                 if (matches.length() == 0) {
                     //if there is no data, call the function on dummy data
                     //this is expected behavior during the off season.
@@ -135,16 +157,9 @@ public class myFetchService extends IntentService
     private void processJSONdata (String JSONdata,Context mContext, boolean isReal)
     {
         //JSON data
-        final String SERIE_A = "357";
-        final String PREMIER_LEGAUE = "354";
-        final String CHAMPIONS_LEAGUE = "362";
-        final String PRIMERA_DIVISION = "358";
-        final String BUNDESLIGA = "351";
-        final String SEASON_LINK = "http://api.football-data.org/alpha/soccerseasons/";
+
         final String MATCH_LINK = "http://api.football-data.org/alpha/fixtures/";
         final String FIXTURES = "fixtures";
-        final String LINKS = "_links";
-        final String SOCCER_SEASON = "soccerseason";
         final String SELF = "self";
         final String MATCH_DATE = "date";
         final String HOME_TEAM = "homeTeamName";
@@ -172,18 +187,12 @@ public class myFetchService extends IntentService
 
             //ContentValues to be inserted
             Vector<ContentValues> values = new Vector <ContentValues> (matches.length());
-            for(int i = 0;i < matches.length();i++)
-            {
+            for(int i = 0;i < matches.length();i++) {
                 JSONObject match_data = matches.getJSONObject(i);
                 League = match_data.getJSONObject(LINKS).getJSONObject(SOCCER_SEASON).
                         getString("href");
                 League = League.replace(SEASON_LINK,"");
-                if(     League.equals(PREMIER_LEGAUE)      ||
-                        League.equals(SERIE_A)             ||
-                        League.equals(CHAMPIONS_LEAGUE)    ||
-                        League.equals(BUNDESLIGA)          ||
-                        League.equals(PRIMERA_DIVISION)     )
-                {
+                if(isLeagueValid(League)) {
                     match_id = match_data.getJSONObject(LINKS).getJSONObject(SELF).
                             getString("href");
                     match_id = match_id.replace(MATCH_LINK, "");
@@ -197,8 +206,9 @@ public class myFetchService extends IntentService
                     mDate = mDate.substring(0,mDate.indexOf("T"));
                     SimpleDateFormat match_date = new SimpleDateFormat("yyyy-MM-ddHH:mm:ss");
                     match_date.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    Date parseddate;
                     try {
-                        Date parseddate = match_date.parse(mDate+mTime);
+                        parseddate = match_date.parse(mDate+mTime);
                         SimpleDateFormat new_date = new SimpleDateFormat("yyyy-MM-dd:HH:mm");
                         new_date.setTimeZone(TimeZone.getDefault());
                         mDate = new_date.format(parseddate);
@@ -214,6 +224,7 @@ public class myFetchService extends IntentService
                     }
                     catch (Exception e)
                     {
+                        parseddate = new Date();
                         Log.d(LOG_TAG, "error here!");
                         Log.e(LOG_TAG,e.getMessage());
                     }
@@ -226,6 +237,7 @@ public class myFetchService extends IntentService
                     match_values.put(DatabaseContract.scores_table.MATCH_ID,match_id);
                     match_values.put(DatabaseContract.scores_table.DATE_COL,mDate);
                     match_values.put(DatabaseContract.scores_table.TIME_COL,mTime);
+                    match_values.put(DatabaseContract.scores_table.DATE_TIME_COL,parseddate.getTime());
                     match_values.put(DatabaseContract.scores_table.HOME_COL,Home);
                     match_values.put(DatabaseContract.scores_table.AWAY_COL,Away);
                     match_values.put(DatabaseContract.scores_table.HOME_GOALS_COL,Home_goals);
@@ -253,11 +265,18 @@ public class myFetchService extends IntentService
 
             //Log.v(LOG_TAG,"Succesfully Inserted : " + String.valueOf(inserted_data));
         }
-        catch (JSONException e)
-        {
+        catch (JSONException e)  {
             Log.e(LOG_TAG,e.getMessage());
         }
 
+    }
+
+    private boolean isLeagueValid(String league) {
+        return league.equals(PREMIER_LEGAUE)      ||
+                league.equals(SERIE_A)             ||
+                league.equals(CHAMPIONS_LEAGUE)    ||
+                league.equals(BUNDESLIGA)          ||
+                league.equals(PRIMERA_DIVISION);
     }
 }
 
