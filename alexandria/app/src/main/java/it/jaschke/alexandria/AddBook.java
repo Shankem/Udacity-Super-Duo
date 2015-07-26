@@ -139,6 +139,16 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         return rootView;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mScannerView != null) {
+            mScannerView.stopScanner();
+            mScannerView.setVisibility(View.GONE);
+            mScanButton.setText(R.string.scan_button);
+        }
+    }
+
     private void setupScanner() {
         mScannerView = (ScannerView) rootView.findViewById(R.id.scanner);
         mScannerView.setScannerViewEventListener(new ScannerView.ScannerViewEventListener() {
@@ -203,6 +213,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(bookSubTitle);
 
         String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
+        authors = authors == null ? "" : authors;
         String[] authorsArr = authors.split(",");
         ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
         ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
