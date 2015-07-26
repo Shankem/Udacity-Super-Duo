@@ -16,6 +16,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
             <ImageView
+                android:contentDescription="@string/empty_crest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -27,6 +28,7 @@
                 android:textSize="@dimen/TeamNames"
                 android:gravity="center"
                 android:text="@string/test_text"
+                android:contentDescription="@string/test_text"
                 android:id="@+id/home_name"/>
         </LinearLayout>
         <LinearLayout
@@ -39,6 +41,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="@string/test_text"
+                android:contentDescription="@string/test_text"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textSize="@dimen/Score"
@@ -48,6 +51,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="@string/test_text"
+                android:contentDescription="@string/test_text"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:id="@+id/data_textview"/>
@@ -59,6 +63,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
             <ImageView
+                android:contentDescription="@string/empty_crest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -69,6 +74,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/test_text"
+                android:contentDescription="@string/test_text"
                 android:textSize="@dimen/TeamNames"
                 android:id="@+id/away_name"/>
         </LinearLayout>

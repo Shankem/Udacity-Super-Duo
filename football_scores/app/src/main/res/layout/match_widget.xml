@@ -29,6 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:contentDescription="@string/empty_crest"
                 android:id="@+id/widget_home_crest"/>
             <TextView
                 android:layout_width="wrap_content"
@@ -37,6 +38,7 @@
                 android:textSize="@dimen/TeamNames"
                 android:gravity="center"
                 android:text="@string/test_text"
+                android:contentDescription="@string/test_text"
                 android:textColor="@android:color/black"
                 android:id="@+id/widget_home_name"/>
         </LinearLayout>
@@ -50,6 +52,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="@string/test_text"
+                android:contentDescription="@string/test_text"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textSize="@dimen/Score"
@@ -60,6 +63,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="@string/test_text"
+                android:contentDescription="@string/test_text"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:id="@+id/widget_date_textview"/>
@@ -74,6 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:contentDescription="@string/empty_crest"
                 android:id="@+id/widget_away_crest"/>
             <TextView
                 android:layout_width="wrap_content"
@@ -81,6 +86,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/test_text"
+                android:contentDescription="@string/test_text"
                 android:textSize="@dimen/TeamNames"
                 android:textColor="@android:color/black"
                 android:id="@+id/widget_away_name"/>
